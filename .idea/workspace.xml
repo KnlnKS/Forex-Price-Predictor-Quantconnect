@@ -7,6 +7,9 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="JupyterTrust" id="e2f49a6c-a4ec-42cf-bfdc-d1924ba8f425" />
   <component name="ProjectId" id="1kkVJHhXJHxJQXNeAv5TPTMWU5w" />
   <component name="ProjectViewState">
@@ -27,6 +30,7 @@
       <updated>1606244504874</updated>
       <workItem from="1606244505985" duration="5000" />
       <workItem from="1606244523006" duration="18000" />
+      <workItem from="1606252310720" duration="13000" />
     </task>
     <servers />
   </component>
