@@ -1,27 +1,24 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import statsmodels as sm
+import statsmodels.api as sm
 
 class CalibratedMultidimensionalCompensator(QCAlgorithm):
 
     def Initialize(self):
         # Set Stuff
         #self.SetCash(100000)
+        self.SetStartDate(2017,1,1) 
         start_time = datetime(2019, 1, 5) # start datetime for history call
         end_time = datetime(2019, 12, 3) # end datetime for history call
         
-        oil = self.AddCfd("WTICOUSD", Resolution.Daily, Market.Oanda).Symbol
-        oil_data = self.History(self.Symbol('WTICOUSD'), start_time, end_time)
-        self.Debug(oil_data.head())
-        model = sm.tsa.arima_model.ARIMA(oil_data['Close'].values, order=(1, 1, 5))
-        res = model.fit()
+        oil = self.AddCfd("WTICOUSD", Resolution.Daily, Market.Oanda)
+        oil_data = self.History(['WTICOUSD'], 730, Resolution.Daily)
         
-        start_time = datetime(2019, 12, 4) # start datetime for history call
-        end_time = datetime(2019, 12, 17) # end datetime for history call
-        
-        predction = res.predict(len(oil_data['Close'].values), (len(oil_data['Close'].values)+10))
-        
-        self.Debug(predction)
+        model = sm.tsa.ARIMA(oil_data['close'].values, order=(1, 1, 1))
+        prediction = model.fit().predict(730, 740)
+        self.Debug(prediction)
+        self.Debug(oil_data['close'].values[:10])
+
 
     def OnData(self, data):
         """
