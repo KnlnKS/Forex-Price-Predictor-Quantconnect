@@ -10,11 +10,10 @@ class CalibratedMultidimensionalCompensator(QCAlgorithm):
         # Set Stuff
         self.SetCash(100000)
         self.SetStartDate(2017,1,1) 
-        self.ticker = "WTICOUSD"
         self.lookback = 4*365 # Lookback window for history request
-        self.lookforwardVal = 150 # How many days into the future to predict data for
+        self.lookforwardVal = 10 # How many days into the future to predict data for
         
-        self.oil = self.AddCfd(self.ticker, Resolution.Daily, Market.Oanda)
+        self.oil = self.AddCfd("WTICOUSD", Resolution.Daily, Market.Oanda)
         
         self.Debug(self.GetPrediction())
         
@@ -22,7 +21,7 @@ class CalibratedMultidimensionalCompensator(QCAlgorithm):
         return self.lookback+self.lookforwardVal
    
     def GetPrediction(self):
-        oil_data = self.History([self.ticker], self.lookback, Resolution.Daily)
+        oil_data = self.History(["WTICOUSD"], self.lookback, Resolution.Daily)
         model = sm.tsa.ARIMA(oil_data['close'].values, order=(1, 1, 1)).fit()
         prediction = model.predict(self.lookback, self.lookforward())
         """
