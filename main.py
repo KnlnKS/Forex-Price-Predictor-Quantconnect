@@ -4,20 +4,35 @@ import statsmodels.api as sm
 
 class CalibratedMultidimensionalCompensator(QCAlgorithm):
 
+class CalibratedMultidimensionalCompensator(QCAlgorithm):
+
     def Initialize(self):
         # Set Stuff
-        #self.SetCash(100000)
+        self.SetCash(100000)
         self.SetStartDate(2017,1,1) 
-        start_time = datetime(2019, 1, 5) # start datetime for history call
-        end_time = datetime(2019, 12, 3) # end datetime for history call
+        self.ticker = "WTICOUSD"
+        self.lookback = 4*365 # Lookback window for history request
+        self.lookforwardVal = 150 # How many days into the future to predict data for
         
-        oil = self.AddCfd("WTICOUSD", Resolution.Daily, Market.Oanda)
-        oil_data = self.History(['WTICOUSD'], 730, Resolution.Daily)
+        self.oil = self.AddCfd(self.ticker, Resolution.Daily, Market.Oanda)
         
-        model = sm.tsa.ARIMA(oil_data['close'].values, order=(1, 1, 1))
-        prediction = model.fit().predict(730, 740)
-        self.Debug(prediction)
-        self.Debug(oil_data['close'].values[:10])
+        self.Debug(self.GetPrediction())
+        
+    def lookforward(self):
+        return self.lookback+self.lookforwardVal
+   
+    def GetPrediction(self):
+        oil_data = self.History([self.ticker], self.lookback, Resolution.Daily)
+        model = sm.tsa.ARIMA(oil_data['close'].values, order=(1, 1, 1)).fit()
+        prediction = model.predict(self.lookback, self.lookforward())
+        """
+        
+        """
+        return prediction
+        
+        
+    def bullish():
+        return (self.GetPrediction().sum())>=0
 
 
     def OnData(self, data):
