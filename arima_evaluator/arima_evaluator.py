@@ -50,7 +50,7 @@ def eval_models(dataset, p_values, d_values, q_values):
     print('MSE=%.3f' % best_score)
 
 
-meow = int(len(oil_data) * 0.8)
-meow = len(oil_data[meow:])
-print('Testing Predictions for ' + str(meow) + ' days.')
+test_length = int(len(oil_data) * 0.8)
+test_length = len(oil_data[meow:])
+print('Testing Predictions for ' + str(test_length) + ' days.')
 eval_models(oil_data, [1], [1], [6,7,8,9])
