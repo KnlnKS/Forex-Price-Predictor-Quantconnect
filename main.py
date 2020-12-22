@@ -7,7 +7,7 @@ class OilyAlgo(QCAlgorithm):
         self.ticker = "WTICOUSD" # Ticker
         self.lookback = 4*365 # Lookback window for history request
         self.lookforwardVal = 5 # How many days into the future to predict data for
-        self.order = (1, 1, 6) # ARIMA model config values
+        self.order = (1, 1, 0) # ARIMA model config values
         
         # Algorithm Parameters
         self.SetCash(100000) # Starting Cash
