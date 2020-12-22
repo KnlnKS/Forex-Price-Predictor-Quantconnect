@@ -53,4 +53,4 @@ def eval_models(dataset, p_values, d_values, q_values):
 meow = int(len(oil_data) * 0.8)
 meow = len(oil_data[meow:])
 print('Testing Predictions for ' + str(meow) + ' days.')
-eval_models(oil_data, [1], [1], [9])
+eval_models(oil_data, [1], [1], [6,7,8,9])
