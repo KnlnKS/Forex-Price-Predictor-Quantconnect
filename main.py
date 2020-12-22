@@ -1,27 +1,31 @@
-import matplotlib.pyplot as plt
-import pandas as pd
 import statsmodels.api as sm
 
 class OilyAlgo(QCAlgorithm):
 
     def Initialize(self):
-        # Set Stuff
-        self.SetCash(100000)
-        self.SetStartDate(2020,1,1) 
-        self.SetEndDate(2020,2,1) 
-        self.ticker = "WTICOUSD"
+        # Constants
+        self.ticker = "WTICOUSD" # Ticker
         self.lookback = 4*365 # Lookback window for history request
         self.lookforwardVal = 5 # How many days into the future to predict data for
-        self.predVal = 0 # Predicted increase/decrease
+        self.order = (1, 1, 6) # ARIMA model config values
         
-        self.oil = self.AddCfd("WTICOUSD", Resolution.Daily, Market.Oanda)
+        # Algorithm Parameters
+        self.SetCash(100000) # Starting Cash
+        self.SetStartDate(2020,1,1) # Beginning Date of Algo
+        self.SetEndDate(2020,2,1)  # End Date of Algo
+        self.oil = self.AddCfd(self.ticker, Resolution.Daily, Market.Oanda)
         
         
     def getForecast(self):
-        oil_data = self.History(["WTICOUSD"], self.lookback, Resolution.Daily)
-        model = sm.tsa.ARIMA(oil_data['close'].values, order=(1, 1, 7)).fit()
-        prediction = model.forecast(self.lookforwardVal)
-        self.Debug(prediction[0][4])
+        lfv = self.lookforwardVal
+        oil_data = self.History([self.ticker], self.lookback, Resolution.Daily)
+        model = sm.tsa.ARIMA(oil_data['close'].values, order=self.order).fit()
+        
+        if lfv == 1:
+            prediction = model.forecast()[0]
+        else:
+            prediction = model.forecast(lfv)[0][lfv-1]
+        
         return prediction
         
         
@@ -30,14 +34,15 @@ class OilyAlgo(QCAlgorithm):
 
     
     def OnData(self, data):
-        currentPrice = data[self.ticker].Price
-        forecast = self.getForecast()
-        bullish = self.bullish(currentPrice, forecast[0][4])
-        invested = self.Portfolio["WTICOUSD"].Invested
-        currentCash = self.Portfolio.Cash
+        currentPrice = data[self.ticker].Price # Current Oil Price
+        forecast = self.getForecast() # Get forecast
+        bullish = self.bullish(currentPrice, forecast) # Bullish?
+        invested = self.Portfolio[self.ticker].Invested # Oil owned?
+        currentCash = self.Portfolio.Cash # Current cash on hand
+        oilHoldings = self.Portfolio[self.ticker].Quantity # Amount of oil owned
 
         if bullish:
-            self.MarketOrder("WTICOUSD", 1000)
+            self.MarketOrder(self.ticker, 1000)
         elif invested and not bullish:
             self.MarketOrder("WTICOUSD", -1000)
         
