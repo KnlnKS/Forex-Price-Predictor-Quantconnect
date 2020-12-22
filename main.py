@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import statsmodels.api as sm
 
-class CalibratedMultidimensionalCompensator(QCAlgorithm):
+class OilyAlgo(QCAlgorithm):
 
     def Initialize(self):
         # Set Stuff
@@ -19,8 +19,9 @@ class CalibratedMultidimensionalCompensator(QCAlgorithm):
         
     def getForecast(self):
         oil_data = self.History(["WTICOUSD"], self.lookback, Resolution.Daily)
-        model = sm.tsa.ARIMA(oil_data['close'].values, order=(1, 1, 1)).fit()
-        prediction = model.forecast()
+        model = sm.tsa.ARIMA(oil_data['close'].values, order=(1, 1, 7)).fit()
+        prediction = model.forecast(self.lookforwardVal)
+        self.Debug(prediction[0][4])
         return prediction
         
         
@@ -31,13 +32,11 @@ class CalibratedMultidimensionalCompensator(QCAlgorithm):
     def OnData(self, data):
         currentPrice = data[self.ticker].Price
         forecast = self.getForecast()
-        bullish = self.bullish(currentPrice, forecast[0])
+        bullish = self.bullish(currentPrice, forecast[0][4])
         invested = self.Portfolio["WTICOUSD"].Invested
         currentCash = self.Portfolio.Cash
 
-        if not invested and bullish:
-            self.MarketOrder("WTICOUSD", 1000)
-        elif invested and bullish:
+        if bullish:
             self.MarketOrder("WTICOUSD", 1000)
         elif invested and not bullish:
             self.MarketOrder("WTICOUSD", -1000)
