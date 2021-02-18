@@ -1,2 +1,3 @@
 # QuantConnect Project File#
 .qcproject
+*.xml
